@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+
+//Shahril //
 use App\Task;
+use Faker\Generator; //This for to use $faker generator
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response; //This for to use response::
+
 
 class TaskController extends Controller
 {
@@ -14,7 +19,11 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return 'ITS Working';
+        //return 'ITS Working';
+	//Shahril //
+	//Task::all() will show all data
+	return response(Task::all()->jsonSerialize(), Response::HTTP_OK); //HTTP_OK will pass response 200
+
     }
 
     /**
@@ -22,9 +31,22 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+
+    //http://10.124.12.131/api/tasks/create
+    public function create(Generator $faker)
     {
         //Shahril //
+        $task = new Task();
+        $task->title = $faker->sentence(2);
+        $task->priority = $faker->boolean ? 'low' : 'high' ;
+        $task->save();
+
+	//return jsonSerialize to pull out data as json format
+	//use response:: to show the data that successful
+        return response($task->jsonSerialize(), Response::HTTP_CREATED ); //HTTP_CREATED = 201
+        //return response($task->jsonSerialize() );
+
+
     }
 
     /**
@@ -35,7 +57,19 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        //Shahril //
+        $task = new Task();
+        $task->title = $request->title;
+        $task->priority = $request->priority;
+        $task->save();
+
+        //return jsonSerialize to pull out data as json format
+        //use response:: to show the data that successful
+        return response($task->jsonSerialize(), Response::HTTP_CREATED ); //HTTP_CREATED = 201
+        //return response($task->jsonSerialize() );
+
+
     }
 
     /**
@@ -80,6 +114,11 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        //Shahril //
+        Task::destroy($id) ;
+	return response( null, Response::HTTP_OK ) ;
     }
 }
+
+
+
