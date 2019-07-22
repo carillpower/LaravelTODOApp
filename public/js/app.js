@@ -1750,6 +1750,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
  //This is to load component so it knows it defined from Task.vue
 //import Loading from 'vue-loading-overlay';
 
@@ -1786,7 +1793,7 @@ __webpack_require__.r(__webpack_exports__);
                     this.isLoading = false;
                      })
                 }
-       
+
             },
             checkInputs(){
                 if(this.task.title && this.task.priority) return true;
@@ -1819,8 +1826,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      //This part is to show GET data from database
+
+      /*
+                      tasks: [
+      
+                        {id: 1, title: 'Task 1', priority: 'low'},
+                        {id: 2, title: 'Task 2', priority: 'low'},
+                        {id: 3, title: 'Task 3', priority: 'high'}
+      
+                      ],
+      */
+      tasks: [],
+      //This part is to show GET data from database
+      task: {
+        title: '',
+        priority: ''
+      },
+      //This is to POST/PUT data into database
       message: 'Hello From Here ...'
     };
+  },
+  //This to GET data from database
+  methods: {
+    getTasks: function getTasks() {
+      var _this = this;
+
+      window.axios.get('/api/tasks').then(function (_ref) {
+        var data = _ref.data;
+        //THis will GET data from DB using then({data}) pass into forEach loop then pass it to tasks variable, then return to above tasks
+        data.forEach(function (task) {
+          _this.tasks.push(task);
+        });
+      });
+    },
+    //Can get the URL from  php artisan route:list|egrep -i 'get|domain|---'
+    store: function store() {
+      console.log(this.task.title + ' hahaha ' + this.task.priority); //This will print out value input for task.title
+    }
+  },
+  created: function created() {
+    //This will be lifeCycle if everytime getTasks get updated
+    this.getTasks();
   },
   components: {
     TaskComponent: _Task_vue__WEBPACK_IMPORTED_MODULE_0__["default"] //This to load <task-component> above
@@ -1834,9 +1881,11 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/Task.vue?vue&type=script&lang=js& ***!
   \**********************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 //
 //
 //
@@ -1866,35 +1915,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {};
+  },
 
-/*
+  /*
+          methods: {
+  
+              remove(){
+  
+                  this.$emit('delete', this.task.id)
+  
+              }
+  
+  
+          },
+  */
+  props: ['task'] //This is needed as link to :task="task" in App.vue and {{ task.id }} above
 
-    export default{
-
-        data(){
-            return{
-            }
-
-        },
-
-        methods: {
-
-            remove(){
-
-                this.$emit('delete', this.task.id)
-
-            }
-
-
-        },
-
-
-        props: ['task']
-
-    }
-
-*/
+});
 
 /***/ }),
 
@@ -37203,12 +37243,78 @@ var render = function() {
       _c(
         "tbody",
         [
-          _c("task-component"),
+          _vm._l(_vm.tasks, function(task) {
+            return _c("task-component", { key: task.id, attrs: { task: task } })
+          }),
           _vm._v(" "),
           _c("tr", [
-            _vm._m(1),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.task.title,
+                    expression: "task.title"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { type: "text", id: "task" },
+                domProps: { value: _vm.task.title },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.task, "title", $event.target.value)
+                  }
+                }
+              })
+            ]),
             _vm._v(" "),
-            _vm._m(2),
+            _c("td", [
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.task.priority,
+                      expression: "task.priority"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { id: "select" },
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.$set(
+                        _vm.task,
+                        "priority",
+                        $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      )
+                    }
+                  }
+                },
+                [
+                  _c("option", [_vm._v("Low")]),
+                  _vm._v(" "),
+                  _c("option", [_vm._v("Medium")]),
+                  _vm._v(" "),
+                  _c("option", [_vm._v("High")])
+                ]
+              )
+            ]),
             _vm._v(" "),
             _c("td", [
               _c(
@@ -37219,7 +37325,7 @@ var render = function() {
             ])
           ])
         ],
-        1
+        2
       )
     ])
   ])
@@ -37238,31 +37344,6 @@ var staticRenderFns = [
         _c("th", [_vm._v("Priority")]),
         _vm._v(" "),
         _c("th", [_vm._v("Action")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", id: "task" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("select", { staticClass: "form-control", attrs: { id: "select" } }, [
-        _c("option", [_vm._v("Low")]),
-        _vm._v(" "),
-        _c("option", [_vm._v("Medium")]),
-        _vm._v(" "),
-        _c("option", [_vm._v("High")])
       ])
     ])
   }
@@ -37288,24 +37369,23 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", [_vm._v("id-1")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("title-1")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("priority-1")]),
-      _vm._v(" "),
-      _c("td")
+  return _c("tr", [
+    _c("td", [_vm._v(_vm._s(_vm.task.id))]),
+    _vm._v(" "),
+    _c("td", [_vm._v(_vm._s(_vm.task.title))]),
+    _vm._v(" "),
+    _c("td", [_vm._v(_vm._s(_vm.task.priority))]),
+    _vm._v(" "),
+    _c("td", [
+      _c(
+        "button",
+        { staticClass: "btn btn-danger", on: { click: _vm.remove } },
+        [_vm._v("Remove")]
+      )
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -49514,6 +49594,7 @@ try {
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
+//Shahril //
 
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
@@ -49620,15 +49701,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************************************!*\
   !*** ./resources/assets/js/components/Task.vue ***!
   \*************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Task_vue_vue_type_template_id_5df6e888___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Task.vue?vue&type=template&id=5df6e888& */ "./resources/assets/js/components/Task.vue?vue&type=template&id=5df6e888&");
 /* harmony import */ var _Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Task.vue?vue&type=script&lang=js& */ "./resources/assets/js/components/Task.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -49658,15 +49738,13 @@ component.options.__file = "resources/assets/js/components/Task.vue"
 /*!**************************************************************************!*\
   !*** ./resources/assets/js/components/Task.vue?vue&type=script&lang=js& ***!
   \**************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./Task.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/Task.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Task_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 

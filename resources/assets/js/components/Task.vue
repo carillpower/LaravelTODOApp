@@ -8,28 +8,26 @@
          <p>TASK</p>
         </div>
         -->
-
+<!--
         <tr>
             <td>id-1</td>
             <td>title-1</td>
             <td>priority-1</td>
             <td></td>
         </tr>
-        
-            <!--
+-->
         <tr>
             <td>{{ task.id }}</td>
             <td>{{ task.title }}</td>
             <td>{{ task.priority }}</td>
             <td><button @click="remove" class="btn btn-danger">Remove</button></td>
         </tr>
-            -->
+
 
 </template>
 
 
 <script>
-/*
 
     export default{
 
@@ -38,7 +36,7 @@
             }
 
         },
-
+/*
         methods: {
 
             remove(){
@@ -49,13 +47,13 @@
 
 
         },
+*/
 
+        props: ['task'] //This is needed as link to :task="task" in App.vue and {{ task.id }} above
 
-        props: ['task']
 
     }
 
-*/
 
 </script>
 
