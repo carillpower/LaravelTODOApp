@@ -112,11 +112,11 @@ class TaskController extends Controller
      * @param  \App\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
         //Shahril //
         Task::destroy($id) ;
-	return response( null, Response::HTTP_OK ) ;
+	    return response( null, Response::HTTP_OK ) ;
     }
 }
 

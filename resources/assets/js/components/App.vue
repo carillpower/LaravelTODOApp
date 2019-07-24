@@ -4,7 +4,7 @@
     <div class="app-component">
         <p> APP </p>
          <p> {{ message }} </p> <!-- Will show Hello From Here... -->
- <!-- <loading :active.sync="isLoading"></loading> -->
+        <loading :active.sync="isLoading"></loading> <!-- This setup from vue-loading-overlay below -->
 
          <table class="table">
              <thead>
@@ -20,8 +20,10 @@
              <!-- <task-component v-for="task in tasks" :key="task.id" :task="task" @delete="remove"></task-component> -->
              <!-- v-for = for loop , tasks is value taken from below parse to task
              task.id is the key for loop
-             :task = variable declare in Task.vue , "task" in the value object -->
-             <task-component v-for="task in tasks" :key="task.id" :task="task"  ></task-component>
+             :task = variable declare in Task.vue , "task" in the value object 
+             @delete from Task.vue , will pass to method remove below
+             -->
+             <task-component v-for="task in tasks" :key="task.id" :task="task" @delete="removed"  ></task-component>
 
              <tr>
 
@@ -59,74 +61,19 @@
 
 <script>
     import TaskComponent from './Task.vue'; //This is to load component so it knows it defined from Task.vue
-    //import Loading from 'vue-loading-overlay';
+    
+    //Download packages from https://github.com/ankurk91/vue-loading-overlay
+    //yum install GConf2-3.2.6-8.el7.x86_64 GConf2-devel-3.2.6-8.el7.x86_64
+    //npm install vue-loading-overlay --no-optional --save
+    import Loading from 'vue-loading-overlay';
+    import 'vue-loading-overlay/dist/vue-loading.min.css'; //Import stylesheet
 
-/*
-
-    // Import stylesheet
-    import 'vue-loading-overlay/dist/vue-loading.min.css';
-    export default{
-
-        data(){
-
-            return{
-                isLoading: false,
-                tasks: [],
-                task: {title: '', priority: ''}
-
-            }
-
-        },
-        methods: {
-            getTasks(){
-                window.axios.get('/api/tasks').then(({data})=>{
-                    data.forEach(task =>{
-                    this.tasks.push(task)
-                });
-              });
-            },
-            store(){
-                if(this.checkInputs()){
-                    this.isLoading = true;
-                    window.axios.post('/api/tasks', this.task).then(savedTask =>{
-                    this.tasks.push(savedTask.data);
-                    this.task.title = '';
-                    this.isLoading = false;
-                     })
-                }
-
-            },
-            checkInputs(){
-                if(this.task.title && this.task.priority) return true;
-            },
-
-            remove(id){
-                this.isLoading = true;
-                window.axios.delete(`/api/tasks/${id}`).then(()=>{
-                    let index = this.tasks.findIndex(task => task.id === id);
-                    this.tasks.splice(index, 1);
-                    this.isLoading = false;
-                });
-            }
-        },
-
-        created(){
-
-          this.getTasks();
-
-        },
-
-
-        components: {TaskComponent, Loading}
-
-
-    }
-
-*/
 
         export default{
           data(){
             return{
+                isLoading: false, //This setup from vue-loading-overlay
+                
                 //This part is to show GET data from database
 /*
                 tasks: [
@@ -154,10 +101,34 @@
               });
             }, //Can get the URL from  php artisan route:list|egrep -i 'get|domain|---'
 
-            store(){
-		console.log(this.task.title + ' hahaha '+ this.task.priority ) //This will print out value input for task.title
+            store(){ //This is to save, will go to $todo/app/Http/Controllers/TaskController.php function store   
+                if( this.checkInputs() ){ //This will go to method checkInputs do the checking first
+        		//console.log(this.task.title + ' hahaha '+ this.task.priority ) //This will print out value input for task.title
+		            window.axios.post('/api/tasks', this.task ).then( savedTask =>{
+		            this.tasks.push( savedTask.data );
+		  
+		            this.task.title = ''; //This is for once data insert and shown, field title will be empty back
+	    	    })
+                }
 
-	    },
+	        },
+
+            checkInputs(){
+                //This to check if title&priority field is filled then can execute
+                if( this.task.title && this.task.priority ) return true;
+            },
+
+            removed(id){ //This is to delete, will go to $todo/app/Http/Controllers/TaskController.php function destroy
+                this.isLoading = true; //Take from vue-loading-overlay , will show loading circle
+                //console.log(`I got the data ${id}`);  //This to test print out show data or not
+                window.axios.delete(`/api/tasks/${id}`).then(()=>{
+                    let index = this.tasks.findIndex( task => task.id === id ); //If the id key same with any existing id in DB then pass to index variable
+                    this.tasks.splice(index,1); //splice = delete .. this function will delete the parse id
+                    this.isLoading = false;
+
+                });
+                
+            }
 
 
         },
@@ -167,7 +138,7 @@
         },
 
 
-    components: {TaskComponent } //This to load <task-component> above
+    components: {TaskComponent , Loading } //This to load <task-component> above , whatever that we import above must put here
 
         }
 

@@ -20,7 +20,8 @@
             <td>{{ task.id }}</td>
             <td>{{ task.title }}</td>
             <td>{{ task.priority }}</td>
-            <td><button @click="remove" class="btn btn-danger">Remove</button></td>
+            <!-- @click gonna go to remove method handler down there-->
+            <td><button @click="removetask" class="btn btn-danger">Remove</button></td>
         </tr>
 
 
@@ -36,18 +37,18 @@
             }
 
         },
-/*
+
         methods: {
 
-            remove(){
+            removetask(){
 
-                this.$emit('delete', this.task.id)
+                this.$emit('delete', this.task.id) //Will take the task.id then pass to @delete in App.vue 
 
             }
 
 
         },
-*/
+
 
         props: ['task'] //This is needed as link to :task="task" in App.vue and {{ task.id }} above
 
